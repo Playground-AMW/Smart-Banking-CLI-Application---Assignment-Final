@@ -227,13 +227,17 @@ public class BankingApp {
 
                             if (valid) {
                                 newBalance = Double.valueOf(customer[i][2]) - withdrawAmount;
+                                if(newBalance < 500) {
+                                    System.out.printf(TRY_MSG,String.format("Remaining balance insufficient!. Do you want to try again (Y/n)?: "));
+                                    if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                    break;
+                                }
                                 customer[i][2] = newBalance + "";
                                 System.out.printf("New Balance: Rs %,.2f", newBalance);
                                 System.out.println();
                                 System.out.printf(SUCCESS_MSG,
                                         String.format("Withdraw completed!. Do you want to try again (Y/n)?: "));
-                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
-                                    continue;
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
                                 break;
                             } else {
                                 System.out.println();
