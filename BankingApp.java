@@ -22,6 +22,7 @@ public class BankingApp {
     static String accID = String.format("SDB-%05d", id);
     static Double initialAmount;
     static Double depositAmount;
+    static Double withdrawAmount;
     static Double newBalance;
     static boolean valid;
 
@@ -141,7 +142,6 @@ public class BankingApp {
                 case DEPOSIT_MONEY:
 
                     String inputID;
-                    loop:
                     do {
                         valid = true;
                         System.out.print("Enter Account number: ");
@@ -153,8 +153,8 @@ public class BankingApp {
                             System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
                             if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
                                 continue;
-                            else {screen = MAIN_MENU;
-                            break loop;}
+                            else screen = MAIN_MENU;
+                            break;
                         } else {
                             int i = 0;
                             while (i < customer.length) {
@@ -179,28 +179,73 @@ public class BankingApp {
                                 System.out.println();
                                 System.out.printf(SUCCESS_MSG,
                                         String.format("Deposit completed!. Do you want to try again (Y/n)?: "));
-                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
-                                {
-                                    System.out.println("in");
-                                    continue;
-                                }
-                                    
-                                else {
-                                    System.out.println("out");
-                                    screen = MAIN_MENU;
-                                    break loop;
-                                }
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                    break;
+                                
                             } else {
                                 System.out.println();
                                 System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
                                 if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
                                     continue;
-                                screen = MAIN_MENU;
                                 break;
                             }
                         }
 
                     } while (!valid);
+                    screen = MAIN_MENU;
+                    break;
+
+                    case WITHDRAW_MONEY:
+                    do {
+                        valid = true;
+                        System.out.print("Enter Account number: ");
+                        inputID = SCANNER.nextLine().strip();
+                        valid = validateId(inputID);
+
+                        if (!valid) {
+                            System.out.println();
+                            System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
+                                continue;
+                            break;
+                        } else {
+                            int i = 0;
+                            while (i < customer.length) {
+                                if (inputID.equals(customer[i][0])) {
+                                    System.out.printf("Current Balance: Rs %,.2f\n", Double.valueOf(customer[i][2]));
+                                    break;
+                                }
+                                i++;
+                            }
+                            String deposit = "w";
+                            valid = true;
+                            System.out.print("\nWithdraw Amount: ");
+                            withdrawAmount = SCANNER.nextDouble();
+                            SCANNER.nextLine();
+
+                            valid = validateAmount(deposit, withdrawAmount);
+
+                            if (valid) {
+                                newBalance = Double.valueOf(customer[i][2]) - withdrawAmount;
+                                customer[i][2] = newBalance + "";
+                                System.out.printf("New Balance: Rs %,.2f", newBalance);
+                                System.out.println();
+                                System.out.printf(SUCCESS_MSG,
+                                        String.format("Withdraw completed!. Do you want to try again (Y/n)?: "));
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
+                                    continue;
+                                break;
+                            } else {
+                                System.out.println();
+                                System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
+                                    continue;
+                                break;
+                            }
+                        }
+                    } while (!valid);
+                    screen = MAIN_MENU;
+                    break;
 
                 default:
                     break;
