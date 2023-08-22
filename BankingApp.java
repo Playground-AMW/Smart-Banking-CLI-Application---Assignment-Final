@@ -21,9 +21,8 @@ public class BankingApp {
     static int id = customer.length + 1;
     static String accID = String.format("SDB-%05d", id);
     static Double initialAmount;
-    static Double depositAmount;
-    static Double withdrawAmount;
     static Double newBalance;
+    static Double transferAmount;
     static boolean valid;
 
     public static void main(String[] args) {
@@ -156,24 +155,17 @@ public class BankingApp {
                             else screen = MAIN_MENU;
                             break;
                         } else {
-                            int i = 0;
-                            while (i < customer.length) {
-                                if (inputID.equals(customer[i][0])) {
-                                    System.out.printf("Current Balance: Rs %,.2f\n", Double.valueOf(customer[i][2]));
-                                    break;
-                                }
-                                i++;
-                            }
-                            String deposit = "d";
+                            int i = findAccount(inputID);
+                            System.out.printf("Current Balance: Rs %,.2f\n", Double.valueOf(customer[i][2]));
                             valid = true;
                             System.out.print("\nDeposit Amount: ");
-                            depositAmount = SCANNER.nextDouble();
+                            transferAmount = SCANNER.nextDouble();
                             SCANNER.nextLine();
 
-                            valid = validateAmount(deposit, depositAmount);
+                            valid = validateAmount("d", transferAmount);
 
                             if (valid) {
-                                newBalance = Double.valueOf(customer[i][2]) + depositAmount;
+                                newBalance = Double.valueOf(customer[i][2]) + transferAmount;
                                 customer[i][2] = newBalance + "";
                                 System.out.printf("New Balance: Rs %,.2f", newBalance);
                                 System.out.println();
@@ -190,8 +182,8 @@ public class BankingApp {
                                 break;
                             }
                         }
-
                     } while (!valid);
+                    transferAmount = 0.0;
                     screen = MAIN_MENU;
                     break;
 
@@ -209,27 +201,22 @@ public class BankingApp {
                                 continue;
                             break;
                         } else {
-                            int i = 0;
-                            while (i < customer.length) {
-                                if (inputID.equals(customer[i][0])) {
-                                    System.out.printf("Current Balance: Rs %,.2f\n", Double.valueOf(customer[i][2]));
-                                    break;
-                                }
-                                i++;
-                            }
-                            String deposit = "w";
+                            int i = findAccount(inputID);
+                            System.out.printf("Current Balance: Rs %,.2f\n", Double.valueOf(customer[i][2]));
                             valid = true;
                             System.out.print("\nWithdraw Amount: ");
-                            withdrawAmount = SCANNER.nextDouble();
+                            transferAmount = SCANNER.nextDouble();
                             SCANNER.nextLine();
 
-                            valid = validateAmount(deposit, withdrawAmount);
+                            valid = validateAmount("w", transferAmount);
 
                             if (valid) {
-                                newBalance = Double.valueOf(customer[i][2]) - withdrawAmount;
+                                newBalance = Double.valueOf(customer[i][2]) - transferAmount;
                                 if(newBalance < 500) {
                                     System.out.printf(TRY_MSG,String.format("Remaining balance insufficient!. Do you want to try again (Y/n)?: "));
-                                    if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                    if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                        valid = false;
+                                        continue;}
                                     break;
                                 }
                                 customer[i][2] = newBalance + "";
@@ -248,9 +235,66 @@ public class BankingApp {
                             }
                         }
                     } while (!valid);
+                    transferAmount = 0.0;
                     screen = MAIN_MENU;
                     break;
+                
+                case TRANSFER_MONEY:
+                    String fromID;
+                    String toID;
+                    do {
+                        /*From id validation */
+                        valid = true;
+                        int i = 0;
+                        int j = 0;
+                        System.out.print("Enter From Account number: ");
+                        fromID = SCANNER.nextLine().strip();
+                        valid = validateId(fromID);
+                        if(!valid){
+                         System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                            break;   
+                        }
+                        /*To id validation */ 
+                        System.out.print("Enter To Account number: ");
+                        toID = SCANNER.nextLine().strip();
+                        valid = validateId(toID);
+                        if(!valid){
+                        System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                        if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                        break;   
+                        }  
+                        i = findAccount(fromID);
+                        j = findAccount(toID);
 
+                        System.out.printf("From Account balance: Rs %,.2f\n",Double.valueOf(customer[i][2]));
+                        System.out.printf("From Account balance: Rs %,.2f\n",Double.valueOf(customer[j][2]));
+                        
+                        System.out.print("Enter amount: ");
+                        transferAmount = SCANNER.nextDouble();
+                        SCANNER.nextLine();
+
+                        valid = validateAmount("w",transferAmount);
+
+                        if(valid && (Double.valueOf(customer[i][2])-(transferAmount*1.02))>=500){
+                           System.out.printf("New From Account Balance: Rs %,.2f\n",Double.valueOf(customer[i][2]) - (transferAmount*1.02));
+                           System.out.printf("New To Account Balance: Rs %,.2f\n",Double.valueOf(customer[j][2]) + transferAmount);
+                           customer[i][2] = Double.valueOf(customer[i][2]) - (transferAmount*1.02) +"";
+                           customer[j][2] = Double.valueOf(customer[j][2]) + transferAmount + ""; 
+                           System.out.printf(SUCCESS_MSG,
+                                        String.format("Money transfer completed!. Do you want to try again (Y/n)?: "));
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                break;
+
+                        }else {
+                           System.out.printf(TRY_MSG, String.format("Insufficient transfer amount. Do you want to try again (Y/n)?: ")); 
+                           if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                           break; 
+                        }
+    
+                    } while (!valid);
+                    screen = MAIN_MENU;
+                        break;
                 default:
                     break;
             }
@@ -298,5 +342,14 @@ public class BankingApp {
             return false;
         } else
             return true;
+    }
+
+    public static int findAccount(String id){
+        int i = 0;
+        do {
+            if(customer[i][0].equals(id)) return i;
+            i++;
+        } while (i<customer.length);
+        return -1;
     }
 }
