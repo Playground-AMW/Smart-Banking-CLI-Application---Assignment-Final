@@ -73,7 +73,7 @@ public class BankingApp {
                             screen = CHECK_ACCOUNT_BALANCE;
                             break;
                         case 6:
-                            screen = DEPOSIT_MONEY;
+                            screen = DROP_EXISTING_ACCOUNT;
                             break;
                         case 7:
                             System.out.println(CLEAR);
@@ -187,7 +187,7 @@ public class BankingApp {
                     screen = MAIN_MENU;
                     break;
 
-                    case WITHDRAW_MONEY:
+                case WITHDRAW_MONEY:
                     do {
                         valid = true;
                         System.out.print("Enter Account number: ");
@@ -283,18 +283,56 @@ public class BankingApp {
                            customer[j][2] = Double.valueOf(customer[j][2]) + transferAmount + ""; 
                            System.out.printf(SUCCESS_MSG,
                                         String.format("Money transfer completed!. Do you want to try again (Y/n)?: "));
-                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
                                 break;
 
                         }else {
                            System.out.printf(TRY_MSG, String.format("Insufficient transfer amount. Do you want to try again (Y/n)?: ")); 
-                           if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                           if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
                            break; 
                         }
     
                     } while (!valid);
                     screen = MAIN_MENU;
                         break;
+                        
+                case CHECK_ACCOUNT_BALANCE:
+                do {
+                    valid = true;
+                        System.out.print("Enter Account number: ");
+                        inputID = SCANNER.nextLine().strip();
+                        valid = validateId(inputID);
+                        if (!valid) {
+                            System.out.println();
+                            System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
+                                continue;
+                            break;
+                        } else {
+                            int i = findAccount(inputID);
+                            System.out.printf("Name: %s\n",customer[i][1]);
+                            System.out.printf("Current Account Balance: Rs %,.2f\n",Double.valueOf(customer[i][2]));
+                            System.out.printf("Available Balance: Rs %,.2f\n",Double.valueOf(customer[i][2])-500.0);
+                            System.out.printf(SUCCESS_MSG,
+                            String.format("Do you want to try again (Y/n)?: "));
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
+                            break;
+                        }
+
+                } while (!valid);
+                screen = MAIN_MENU;
+                break;
+
+                case DROP_EXISTING_ACCOUNT:
+                do {
+                    valid = true;
+                } while (!valid);
                 default:
                     break;
             }
