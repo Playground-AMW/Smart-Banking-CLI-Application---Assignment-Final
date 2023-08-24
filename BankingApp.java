@@ -332,7 +332,49 @@ public class BankingApp {
                 case DROP_EXISTING_ACCOUNT:
                 do {
                     valid = true;
+                    System.out.print("Enter Account number: ");
+                    inputID = SCANNER.nextLine().strip();
+                    valid = validateId(inputID);
+                    if(valid){
+                       int i = findAccount(inputID);
+                       System.out.printf("Name : %s\n",customer[i][1]); 
+                       System.out.printf("Account Balance: %,.2f\n",Double.valueOf(customer[i][2]));
+                       System.out.print("Do you want to delete (Y/n)?: ");
+                       if(SCANNER.nextLine().strip().toUpperCase().equals("Y")){
+
+                        String accDetails = "".concat(customer[i][0].concat(" : ").concat(customer[i][1]));
+                       tempCustomer = new String[customer.length - 1][3];
+                            for (int j = 0,k = 0; j < tempCustomer.length; j++,k++) {
+                            if(j==i){
+                                j--; 
+                                continue;}
+                            tempCustomer[j] = customer[k];
+                            }
+
+                        customer = tempCustomer;
+                        id = customer.length + 1;
+
+                        System.out.printf(SUCCESS_MSG,
+                            String.format("%s has been deleted successfully!. Do you want to try again (Y/n)?: ",accDetails));
+                            if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
+                            break;
+
+                       } else {
+                        valid = false;
+                        break;
+                       }
+                    } else {
+                        System.out.println();
+                        System.out.printf(TRY_MSG, String.format("Do you want to try again (Y/n)?: "));
+                        if (SCANNER.nextLine().strip().toUpperCase().equals("Y"))
+                            continue;
+                        break;
+                    }
                 } while (!valid);
+                screen = MAIN_MENU;
+                break;
                 default:
                     break;
             }
