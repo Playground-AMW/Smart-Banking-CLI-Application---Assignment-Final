@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class BankingApp {
@@ -18,7 +17,7 @@ public class BankingApp {
     static String[][] customer = new String[0][0];
 
     static String name;
-    static int id = customer.length + 1;
+    static int id = 1;
     static String accID = String.format("SDB-%05d", id);
     static Double initialAmount;
     static Double newBalance;
@@ -27,14 +26,13 @@ public class BankingApp {
 
     public static void main(String[] args) {
 
-        final String MAIN_MENU = "\u1F4B0 Welcome to Smart Banking App";
-        final String OPEN_NEW_ACCOUNT = "Open new Account";
-        final String DEPOSIT_MONEY = "Deposit Money";
-        final String WITHDRAW_MONEY = "Withdraw Money";
-        final String TRANSFER_MONEY = "Transfer Money";
-        final String CHECK_ACCOUNT_BALANCE = "Check Account Balance";
-        final String DROP_EXISTING_ACCOUNT = "Drop Existing Account";
-        final String EXTI = "Exit";
+        final String MAIN_MENU = "\u2756 Welcome to Smart Banking App \u2756";
+        final String OPEN_NEW_ACCOUNT = "\u2756 Open new Account \u2756";
+        final String DEPOSIT_MONEY = "\u2756 Deposit Money \u2756";
+        final String WITHDRAW_MONEY = "\u2756 Withdraw Money \u2756";
+        final String TRANSFER_MONEY = "\u2756 Transfer Money \u2756";
+        final String CHECK_ACCOUNT_BALANCE = "\u2756 Check Account Balance \u2756";
+        final String DROP_EXISTING_ACCOUNT = "\u2756 Drop Existing Account \u2756";
 
         String screen = MAIN_MENU;
 
@@ -127,7 +125,7 @@ public class BankingApp {
                     tempCustomer[tempCustomer.length - 1][2] = initialAmount + "";
 
                     customer = tempCustomer;
-                    id = customer.length + 1;
+                    id++;
                     accID = String.format("SDB-%05d", id);
 
                     System.out.println();
@@ -171,7 +169,9 @@ public class BankingApp {
                                 System.out.println();
                                 System.out.printf(SUCCESS_MSG,
                                         String.format("Deposit completed!. Do you want to try again (Y/n)?: "));
-                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
                                     break;
                                 
                             } else {
@@ -224,7 +224,9 @@ public class BankingApp {
                                 System.out.println();
                                 System.out.printf(SUCCESS_MSG,
                                         String.format("Withdraw completed!. Do you want to try again (Y/n)?: "));
-                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                                    valid = false;
+                                    continue;}
                                 break;
                             } else {
                                 System.out.println();
@@ -338,21 +340,20 @@ public class BankingApp {
                     if(valid){
                        int i = findAccount(inputID);
                        System.out.printf("Name : %s\n",customer[i][1]); 
-                       System.out.printf("Account Balance: %,.2f\n",Double.valueOf(customer[i][2]));
-                       System.out.print("Do you want to delete (Y/n)?: ");
+                       System.out.printf("Account balance: %,.2f\n",Double.valueOf(customer[i][2]));
+                       System.out.printf(TRY_MSG,"Do you want to delete (Y/n)?: \n");
                        if(SCANNER.nextLine().strip().toUpperCase().equals("Y")){
 
-                        String accDetails = "".concat(customer[i][0].concat(" : ").concat(customer[i][1]));
+                       String accDetails = "".concat(customer[i][0].concat(" : ").concat(customer[i][1]));
                        tempCustomer = new String[customer.length - 1][3];
                             for (int j = 0,k = 0; j < tempCustomer.length; j++,k++) {
-                            if(j==i){
+                            if(j==i&&k==i){
                                 j--; 
                                 continue;}
                             tempCustomer[j] = customer[k];
                             }
 
                         customer = tempCustomer;
-                        id = customer.length + 1;
 
                         System.out.printf(SUCCESS_MSG,
                             String.format("%s has been deleted successfully!. Do you want to try again (Y/n)?: ",accDetails));
